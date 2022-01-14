@@ -1,16 +1,26 @@
+package main
+
 type Analyzer struct {
-	charFilters []CharFilter
-	tokenizer Tokenizer
+	charFilters  []CharFilter
+	tokenizer    Tokenizer
 	tokenFilters []TokenFilter
 }
 
-func (a Analyzer) Analyzer(s string) TokenStream {
+func NewAnalyzer(charFilters []CharFilter, tokenizer Tokenizer, tokenFilters []TokenFilter) Analyzer {
+	return Analyzer{
+		charFilters:  charFilters,
+		tokenizer:    tokenizer,
+		tokenFilters: tokenFilters,
+	}
+}
+
+func (a Analyzer) Analyze(s string) TokenStream {
 	for _, c := range a.charFilters {
 		s = c.Filter(s)
 	}
-	tokenStream := a.tokenizer.Tokenizer(s)
+	tokenStream := a.tokenizer.Tokenize(s)
 	for _, f := range a.tokenFilters {
-		tokenStream _ f.Filters(tokenStream)
+		tokenStream = f.Filter(tokenStream)
 	}
 	return tokenStream
 }
